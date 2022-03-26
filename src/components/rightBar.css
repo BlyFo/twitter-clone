@@ -1,0 +1,8 @@
+.rightBar-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /*border: 1px solid red;*/
+    padding-left: 30px;
+
+}

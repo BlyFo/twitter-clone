@@ -1,0 +1,9 @@
+.content-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #CCD6DD;
+    border-style: none solid none solid;
+    height: 100vh;
+    width: 600px;
+}
