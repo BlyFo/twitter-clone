@@ -1,9 +1,110 @@
 .content-container{
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    border: 1px solid #CCD6DD;
+    justify-content: flex-start;
+    border: 1px solid #E1E8ED;
     border-style: none solid none solid;
     height: 100vh;
     width: 600px;
+}
+.content-tweet-container{
+    display: flex;
+    flex-direction: row;
+    
+    width: 96.7%;
+    border: 1px solid #E1E8ED;
+    border-style: none none solid none;
+    height: fit-content;
+    padding-left: 20px;
+    padding-top: 20px;
+}
+.content-tweet-container:hover{
+    background-color: #F5F8FA;
+}
+.content-tweet-container > img{
+    height: 50px;
+    width: 50px;
+    border-radius: 50px;
+}
+.content-tweet-content{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-left: 11px;
+}
+.content-tweet-content > p {
+    margin: 0px;
+    margin-top: 2px;
+}
+.content-tweet-content-tittle{
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    width: 100%;
+    height: fit-content;
+}
+.content-tweet-content-tittle >p{
+    margin: 0px;
+    padding: 0px;
+}
+.content-tweet-content-tittle >p + p{
+    margin-left: 5px;
+}
+.content-tweet-content-tittle >p:first-child{
+    font-weight: bold;
+}
+.content-tweet-content-buttons{
+    display: flex;
+    flex-direction: row;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+.content-tweet-content-buttons > button{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 0px;
+    padding: 0px;
+    margin-right: 60px;
+    font-size: 13px;
+    border: none;
+    background: none;
+}
+.button-like:hover{
+    color: red;
+}
+.button-reply:hover{
+    color: blue;
+}
+.content-tweet-content-buttons > button >p{
+    margin: 0px;
+    margin-left: 5px;
+    user-select: none;
+}
+.content-tweetSomething{
+    display: flex;
+    flex-direction: row;
+    border: 1px solid #E1E8ED;
+    border-style: none none solid none;
+    width: 96.8%;
+    min-height: 175px;
+    padding-left: 20px;
+}
+.content-tweetSomething > img{
+    height: 50px;
+    width: 50px;
+    border-radius: 50px;
+    margin-top: 58px;
+}
+.content-tweetSomething-post{
+    display: flex;
+    flex-direction: column;
+    /*justify-content: center;*/
+    margin-top: 70px;
+    width: 100%;
+    height: 60%;
+    margin-left: 15px;
+
 }

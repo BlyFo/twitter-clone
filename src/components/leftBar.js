@@ -18,6 +18,7 @@ function LeftBar(props) {
     height: '65px',
     width: '250px',
     marginBottom: '10px',
+    marginTop: '20px',
     borderRadius: '50px',
     color: 'black'
   }
@@ -29,7 +30,8 @@ function LeftBar(props) {
       borderRadius: '50px',
       justifyContent: 'flex-start',
       fontSize: '16px',
-      marginTop: '10px'
+      marginTop: '10px',
+      width: '40px'
     }
 
     return (
@@ -70,7 +72,7 @@ function LeftBar(props) {
           <p>More</p>
         </Button>
         <Button variant="contained" className='leftBar-button' sx={buttonsStyle}>
-          Tweet
+          <p style={{ marginLeft: '0px', fontWeight: 'bold' }}>Tweet</p>
         </Button >
       </div >
     )

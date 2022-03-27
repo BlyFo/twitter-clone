@@ -7,8 +7,22 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 
 //https://www.schemecolor.com/twitter-shades.php
+//https://www.onlinepalette.com/twitter/
 
 function RightBar(props) {
+
+  const happening_list = [
+    { 'username': "holas", 'content': 'super cosa increible fuer ade este mundo mundial no lo vas a creeer nsfw', 'comments': 12 },
+    { 'username': "holas", 'content': 'super cosa increible fuer ade este mundo mundial no lo vas a creeer nsfw', 'comments': 12 },
+    { 'username': "holas", 'content': 'super cosa increible fuer ade este mundo mundial no lo vas a creeer nsfw', 'comments': 12 },
+    { 'username': "holas", 'content': 'super cosa increible fuer ade este mundo mundial no lo vas a creeer nsfw', 'comments': 12 }
+  ]
+
+  const users_list = [
+    { 'username': "holas", 'name': 'nsfw' },
+    { 'username': "holas", 'name': 'nsfw' },
+    { 'username': "holas", 'name': 'nsfw' }
+  ]
 
   const containerStyle = {
     width: '100%',
@@ -18,6 +32,8 @@ function RightBar(props) {
     margin: '0px',
     padding: '0px',
     paddingLeft: '20px',
+    borderBottomLeftRadius: '20px',
+    borderBottomRightRadius: '20px'
   }
 
   const Search = () => {
@@ -26,11 +42,11 @@ function RightBar(props) {
     )
   }
 
-  const SubContainer = ({ width, height, text, children }) => {
+  const SubContainer = ({ tittle, children }) => {
 
     return (
-      <div className='rightBar-subContainers' style={{ minWidth: `${width}px`, minHeight: `${height}px` }}>
-        <p>{text}</p>
+      <div className='rightBar-subContainers' >
+        <p>{tittle}</p>
         <div className='rightBar-content'>
           {children}
         </div>
@@ -39,35 +55,59 @@ function RightBar(props) {
     )
   }
 
+  const Links = () => {
+    return (
+      <>
+        <Breadcrumbs aria-label="breadcrumb" sx={{ fontSize: 13, width: '350px', marginTop: '20px' }}>
+          <Link underline="hover" color="inherit" target="_blank" rel="noopener noreferrer" href="https://twitter.com/es/tos">
+            Terms of Service
+          </Link>
+          <Link underline="hover" target="_blank" rel="noopener noreferrer" color="inherit" href="https://twitter.com/es/privacy">
+            Privacy Policy
+          </Link>
+          <Link underline="hover" target="_blank" rel="noopener noreferrer" color="inherit" href="https://help.twitter.com/es/rules-and-policies/twitter-cookies">
+            Cookie Policy
+          </Link>
+          <Link underline="hover" target="_blank" rel="noopener noreferrer" color="inherit" href="https://help.twitter.com/es/resources/accessibility">
+            Accessibility
+          </Link>
+          <Link underline="hover" target="_blank" rel="noopener noreferrer" color="inherit" href="https://business.twitter.com/en/help/troubleshooting/how-twitter-ads-work.html?ref=web-twc-ao-gbl-adsinfo&utm_source=twc&utm_medium=web&utm_campaign=ao&utm_content=adsinfo">
+            Ads info
+          </Link>
+        </Breadcrumbs>
+        <Link underline="never" color="inherit">
+          © 2022 Twitter Clone, Inc.
+        </Link>
+      </>
+    );
+  }
+
   return (
     <div className='rightBar-container'>
       <Search />
-      <SubContainer width={350} height={480} text={`What's happening`} >
-        <p>content</p>
+      <SubContainer tittle={`What's happening`} >
+        {happening_list.map((tweet) => (
+          <button className='rightBar-content-button'>
+            <p>{tweet.username}</p>
+            <p>{tweet.content}</p>
+            <p>{tweet.comments + " coments"}</p>
+          </button>
+        ))}
       </SubContainer>
-      <SubContainer width={350} height={240} text={`Who to follow`} >
-        <p>content</p>
+      <SubContainer tittle={`Who to follow`} >
+        {users_list.map((user) => (
+          <button className='rightBar-content-button' style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <img
+              src={require('../images/default_profile_400x400.png')}
+            />
+            <div>
+              <p>{user.name}</p>
+              <p>{"@" + user.username}</p>
+            </div>
+          </button>
+        ))}
       </SubContainer>
-      <Breadcrumbs aria-label="breadcrumb" sx={{ fontSize: 13, width: '350px', marginTop: '20px' }}>
-        <Link underline="hover" color="inherit" target="_blank" rel="noopener noreferrer" href="https://twitter.com/es/tos">
-          Terms of Service
-        </Link>
-        <Link underline="hover" target="_blank" rel="noopener noreferrer" color="inherit" href="https://twitter.com/es/privacy">
-          Privacy Policy
-        </Link>
-        <Link underline="hover" target="_blank" rel="noopener noreferrer" color="inherit" href="https://help.twitter.com/es/rules-and-policies/twitter-cookies">
-          Cookie Policy
-        </Link>
-        <Link underline="hover" target="_blank" rel="noopener noreferrer" color="inherit" href="https://help.twitter.com/es/resources/accessibility">
-          Accessibility
-        </Link>
-        <Link underline="hover" target="_blank" rel="noopener noreferrer" color="inherit" href="https://business.twitter.com/en/help/troubleshooting/how-twitter-ads-work.html?ref=web-twc-ao-gbl-adsinfo&utm_source=twc&utm_medium=web&utm_campaign=ao&utm_content=adsinfo">
-          Ads info
-        </Link>
-      </Breadcrumbs>
-      <Link underline="never" color="inherit">
-        © 2022 Twitter Clone, Inc.
-      </Link>
+      <Links />
     </div>
   );
 }
