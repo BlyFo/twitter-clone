@@ -1,0 +1,60 @@
+.register-login-footer{
+    position: fixed;
+    display: flex;
+    bottom: 0;
+    width: 100vw;
+    min-width: 610px;
+    background-color: #1DA1F2;
+    height: 72px;
+    justify-content: space-around;
+    align-items: center;
+}
+.register-login-baner >p{
+    color: white;
+    margin: 0px;
+}
+.register-login-header{
+    position: absolute;
+    display: flex;
+    margin-top: 10px;
+    width: 100%;
+    top: 0;
+    justify-content: space-between;
+    align-items: center;
+}
+.register-login-modal{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    justify-content: space-around;
+    align-items:center;
+    width: 600px;
+    height: 650px;
+    border-radius: 20px;
+}
+.register-login-register-button{
+    display: flex;
+    border: none;
+    margin: 0px;
+    padding: 0px;
+    margin-left: 5px;
+    background: none;
+    color: #1DA1F2;
+}
+.register-login-register-button:hover{
+    text-decoration-line: underline
+}
+@media screen and (max-width: 720px){
+    .register-login-footer{
+        justify-content: center;
+        width: 100vw;
+    }
+
+    .register-login-baner{
+        display: none;
+    }
+}

@@ -15,12 +15,13 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 function LeftBar(props) {
 
   const profile = {
-    height: '65px',
-    width: '250px',
+    //height: '65px',
+    //width: '250px',
     marginBottom: '10px',
     marginTop: '20px',
+    marginRight: '0px',
     borderRadius: '50px',
-    color: 'black'
+    color: 'black',
   }
 
   const Buttons = () => {
@@ -30,8 +31,8 @@ function LeftBar(props) {
       borderRadius: '50px',
       justifyContent: 'flex-start',
       fontSize: '16px',
-      marginTop: '10px',
-      width: '40px'
+      //marginTop: '10px',
+      minWidth: '10px',
     }
 
     return (
@@ -88,7 +89,9 @@ function LeftBar(props) {
           <p>Name</p>
           <p>@userName</p>
         </div>
-        <MoreHorizOutlinedIcon sx={{ marginLeft: '0px' }} />
+        <div>
+          <MoreHorizOutlinedIcon sx={{ marginLeft: '0px' }} />
+        </div>
       </Button>
     </div>
   );

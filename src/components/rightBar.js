@@ -75,7 +75,7 @@ function RightBar(props) {
             Ads info
           </Link>
         </Breadcrumbs>
-        <Link underline="never" color="inherit">
+        <Link underline="none" color="inherit">
           © 2022 Twitter Clone, Inc.
         </Link>
       </>
@@ -86,8 +86,8 @@ function RightBar(props) {
     <div className='rightBar-container'>
       <Search />
       <SubContainer tittle={`What's happening`} >
-        {happening_list.map((tweet) => (
-          <button className='rightBar-content-button'>
+        {happening_list.map((tweet, i) => (
+          <button key={"tweet " + i} className='rightBar-content-button'>
             <p>{tweet.username}</p>
             <p>{tweet.content}</p>
             <p>{tweet.comments + " coments"}</p>
@@ -95,8 +95,8 @@ function RightBar(props) {
         ))}
       </SubContainer>
       <SubContainer tittle={`Who to follow`} >
-        {users_list.map((user) => (
-          <button className='rightBar-content-button' style={{ flexDirection: 'row', alignItems: 'center' }}>
+        {users_list.map((user, i) => (
+          <button key={"user " + i} className='rightBar-content-button' style={{ flexDirection: 'row', alignItems: 'center' }}>
             <img
               src={require('../images/default_profile_400x400.png')}
             />

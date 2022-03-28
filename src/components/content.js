@@ -51,7 +51,7 @@ function Content(props) {
             width: 80,
             marginTop: '20px',
             marginBottom: '10px',
-            marginLeft: '400px'
+            marginLeft: '77%'
           }}>
             <p style={{ margin: 0, padding: 0, textTransform: 'none' }}>Tweet</p>
           </Button>
@@ -66,8 +66,8 @@ function Content(props) {
     return (
       <>
         {
-          tweets.map((tweet) => (
-            <div className='content-tweet-container'>
+          tweets.map((tweet, i) => (
+            <div key={"posted tweet " + i} className='content-tweet-container'>
               <img
                 src={require('../images/default_profile_400x400.png')}
               />
