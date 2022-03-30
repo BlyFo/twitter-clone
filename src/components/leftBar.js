@@ -12,7 +12,7 @@ import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 import TagOutlinedIcon from '@mui/icons-material/TagOutlined';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 
-function LeftBar(props) {
+function LeftBar({ login, userProfile }) {
 
   const profile = {
     //height: '65px',
@@ -31,7 +31,6 @@ function LeftBar(props) {
       borderRadius: '50px',
       justifyContent: 'flex-start',
       fontSize: '16px',
-      //marginTop: '10px',
       minWidth: '10px',
     }
 
@@ -40,59 +39,67 @@ function LeftBar(props) {
         <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
           <TwitterIcon fontSize='large' sx={{ color: '#55ACEE' }} />
         </Button>
+        {login &&
+          <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
+            <HomeOutlinedIcon sx={{ fontSize: '30px' }} />
+            <p>Home</p>
+          </Button>
+        }
         <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
-          <HomeOutlinedIcon sx={{ fontSize: '30px' }} />
-          <p>Home</p>
-        </Button>
-        <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
-          <TagOutlinedIcon sx={{ fontSize: '30px' }} />
+          <TagOutlinedIcon sx={{ fontSize: '30px', color: 'black' }} />
           <p>Explore</p>
         </Button>
-        <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
-          <NotificationsNoneOutlinedIcon sx={{ fontSize: '30px' }} />
-          <p>Notification</p>
-        </Button>
-        <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
-          <EmailOutlinedIcon sx={{ fontSize: '30px' }} />
-          <p>Message</p>
-        </Button>
-        <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
-          <BookmarkBorderOutlinedIcon sx={{ fontSize: '30px' }} />
-          <p>Bookmarks</p>
-        </Button>
-        <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
-          <ArticleOutlinedIcon sx={{ fontSize: '30px' }} />
-          <p>List</p>
-        </Button>
-        <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
-          <PermIdentityIcon sx={{ fontSize: '30px' }} />
-          <p>Profile</p>
-        </Button>
-        <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
-          <MoreHorizOutlinedIcon sx={{ fontSize: '30px' }} />
-          <p>More</p>
-        </Button>
-        <Button variant="contained" className='leftBar-button' sx={buttonsStyle}>
-          <p style={{ marginLeft: '0px', fontWeight: 'bold' }}>Tweet</p>
-        </Button >
+        {login &&
+          <>
+            <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
+              <NotificationsNoneOutlinedIcon sx={{ fontSize: '30px' }} />
+              <p>Notification</p>
+            </Button>
+            <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
+              <EmailOutlinedIcon sx={{ fontSize: '30px' }} />
+              <p>Message</p>
+            </Button>
+            <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
+              <BookmarkBorderOutlinedIcon sx={{ fontSize: '30px' }} />
+              <p>Bookmarks</p>
+            </Button>
+            <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
+              <ArticleOutlinedIcon sx={{ fontSize: '30px' }} />
+              <p>List</p>
+            </Button>
+            <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
+              <PermIdentityIcon sx={{ fontSize: '30px' }} />
+              <p>Profile</p>
+            </Button>
+            <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
+              <MoreHorizOutlinedIcon sx={{ fontSize: '30px' }} />
+              <p>More</p>
+            </Button>
+            <Button variant="contained" className='leftBar-button' sx={buttonsStyle}>
+              <p style={{ marginLeft: '0px', fontWeight: 'bold' }}>Tweet</p>
+            </Button >
+          </>
+        }
       </div >
     )
   }
   return (
     <div className='leftBar-container'>
       <Buttons />
-      <Button className='leftBar-profile' sx={profile}>
-        <img
-          src={require('../images/default_profile_400x400.png')}
-        />
-        <div className='leftBar-username'>
-          <p>Name</p>
-          <p>@userName</p>
-        </div>
-        <div>
-          <MoreHorizOutlinedIcon sx={{ marginLeft: '0px' }} />
-        </div>
-      </Button>
+      {login &&
+        <Button className='leftBar-profile' sx={profile}>
+          <img
+            src={require('../images/default_profile_400x400.png')}
+          />
+          <div className='leftBar-username'>
+            <p>{userProfile.firstName}</p>
+            <p>{"@" + userProfile.userName}</p>
+          </div>
+          <div>
+            <MoreHorizOutlinedIcon sx={{ marginLeft: '0px' }} />
+          </div>
+        </Button>
+      }
     </div>
   );
 }

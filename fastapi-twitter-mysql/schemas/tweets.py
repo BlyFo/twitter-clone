@@ -7,8 +7,13 @@ from uuid import UUID
 
 class TweetInfo(TypedDict):
     like_count: int
-    liked_by: List[str]
+    liked: bool
     comment_count: int
+    commented: bool
+
+
+class FullTweetInfo(TweetInfo):
+    liked_by: List[str]
     comment_by: List[str]
 
 
@@ -28,10 +33,12 @@ class BaseTweet(BaseModel):
     )
 
 
-class Tweet(BaseTweet):
+class SimpleTweet(BaseTweet):
     info: TweetInfo
     created_at: datetime = Field(default=datetime.now())
 
 
-class FullTweet(Tweet):
+class FullTweet(BaseTweet):
     tweet_id: int = Field(..., ge=0)
+    info: FullTweetInfo
+    created_at: datetime = Field(default=datetime.now())

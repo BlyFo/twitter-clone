@@ -7,7 +7,9 @@ from fastapi import APIRouter, status, HTTPException, Depends
 from config.db import conn
 from models.tweets import tweets
 from models.hashtags import hashtags
-from schemas.tweets import Tweet, BaseTweet, TweetInfo, FullTweet
+from models.commented_by import commented_by
+from models.liked_by import liked_by
+from schemas.tweets import BaseTweet, TweetInfo, FullTweet, SimpleTweet, FullTweetInfo
 from authentication.auth import AuthHandler
 
 tweet_router = APIRouter(
@@ -52,10 +54,13 @@ def get_tweets():
 
 @tweet_router.post(path="/create",
                    status_code=status.HTTP_201_CREATED,
-                   response_model=FullTweet,
+                   response_model=SimpleTweet,
                    summary="create a tweet",
                    )
 def create_Tweet(tweet: BaseTweet, token_username=Depends(auth_handler.auth_wrapper)):
+
+    print(tweet)
+
     new_tweet = tweet.dict()
 
     if new_tweet['user_name'] != token_username:
@@ -86,8 +91,8 @@ def create_Tweet(tweet: BaseTweet, token_username=Depends(auth_handler.auth_wrap
     new_tweet['created_at'] = datetime.now()
     new_tweet['likes_count'] = 0
     new_tweet['comments_count'] = 0
-    new_tweet['likes'] = []
-    new_tweet['comments'] = []
+    new_tweet['liked'] = False
+    new_tweet['commented'] = False
 
     inserted_result = conn.execute(
         tweets.insert()
@@ -116,11 +121,11 @@ def create_Tweet(tweet: BaseTweet, token_username=Depends(auth_handler.auth_wrap
 
     temp_dict = TweetInfo(
         like_count=new_tweet['likes_count'],
-        liked_by=new_tweet['likes'],
+        liked=new_tweet['liked'],
         comment_count=new_tweet['comments_count'],
-        comment_by=new_tweet['comments']
+        commented=new_tweet['commented']
     )
-    tweet_response = FullTweet(
+    tweet_response = SimpleTweet(
         tweet_id=result.tweet_id,
         reply_to=new_tweet['reply_to'],
         user_name=new_tweet['user_name'],
@@ -138,7 +143,7 @@ def create_Tweet(tweet: BaseTweet, token_username=Depends(auth_handler.auth_wrap
     response_model=FullTweet,
     summary="get a tweet",
 )
-def get_tweet(tweet_id: str):
+def get_tweet(tweet_id: str, user_name: str):
 
     tweet_result = conn.execute(
         tweets.select().where(tweets.c.tweet_id == tweet_id)
@@ -150,7 +155,22 @@ def get_tweet(tweet_id: str):
             detail="Tweet not found"
         )
 
-    tweet_response = create_tweet(tweet_result)
+    like_result = conn.execute(
+        liked_by.select().where(
+            liked_by.c.tweet_id == tweet_id and liked_by.c.user_name == user_name
+        )
+    )
+
+    comment_result = conn.execute(
+        commented_by.select().where(
+            commented_by.c.tweet_id == tweet_id and commented_by.c.user_name == user_name
+        )
+    )
+
+    print(like_result)
+    print(comment_result)
+
+    tweet_response = create_tweet(tweet_result, like_result, comment_result)
 
     return tweet_response
 

@@ -9,86 +9,143 @@ import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-function Register_Login(props) {
+import { RegisterUser, LoginUser } from '../services/endPoints';
 
+
+function Register_Login({ setLogin }) {
+
+  const [samePassword, setSamePassword] = React.useState(false);
+  const [canRegister, setCanRegister] = React.useState(false);
+  const [canLogin, setCanLogin] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const handleClose = () => setOpen(false);
+  const [datos, setDatos] = React.useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    bio: '',
+    gender: 'other',
+    userName: '',
+    password: ''
+  })
 
-  const [age, setAge] = React.useState('other');
-
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
-
-  const [login, setLogin] = React.useState(false);
-
-  const LoginUser = () => {
-    return (
-      <>
-        <div className='register-login-header'>
-          <Button variant="text" onClick={handleClose} sx={{ borderRadius: 50, minWidth: '35px', fontSize: 15, color: 'black' }}> X </Button>
-          <TwitterIcon fontSize='large' sx={{ color: '#55ACEE', marginLeft: '-40px' }} />
-          <div></div>
-        </div>
-        <h1 > Inicia sesión en Twitter </h1>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <TextField label="User name" variant="outlined" sx={{ width: '300px' }} />
-          <TextField label="Password" variant="outlined" type="password" sx={{ marginTop: '10px', width: '300px' }} />
-        </div>
-        <Button variant="contained" sx={{ textTransform: 'none', width: '300px' }}> Iniciar sesion </Button>
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-          <p>¿No tienes una cuenta?</p>
-          <button className='register-login-register-button' onClick={() => setLogin(!login)} > Regístrate </button>
-        </div>
-      </>
-    );
+  const handleClose = () => {
+    setDatos({
+      firstName: '',
+      lastName: '',
+      email: '',
+      bio: '',
+      gender: 'other',
+      userName: '',
+      password: ''
+    })
+    setOpen(false);
   }
 
-  const RegisterUser = () => {
-    return (
-      <>
-        <div className='register-login-header'>
-          <Button variant="text" onClick={handleClose} sx={{ borderRadius: 50, minWidth: '35px', fontSize: 15, color: 'black' }}> X </Button>
-          <TwitterIcon fontSize='large' sx={{ color: '#55ACEE', marginLeft: '-40px' }} />
-          <div></div>
-        </div>
-        <h1 > Únete a Twitter hoy mismo </h1>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <TextField label="First name" variant="outlined" sx={{ width: '180px', marginRight: '10px' }} />
-            <TextField label="Last name" variant="outlined" sx={{ width: '180px' }} />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'row', marginTop: '10px' }}>
-            <TextField label="email" variant="outlined" sx={{ width: '250px' }} />
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={age}
-              label="Gender"
-              onChange={handleChange}
-              sx={{ width: '120px' }}
-            >
-              <MenuItem value='male'>Male</MenuItem>
-              <MenuItem value='female'>Female</MenuItem>
-              <MenuItem value='non binary'>Non binary</MenuItem>
-              <MenuItem value='other'>Other</MenuItem>
-            </Select>
-          </div>
-          <TextField label="Bio" multiline rows={4} variant="outlined" inputProps={{ maxLength: 255 }} sx={{ width: '370px', marginTop: '10px' }} />
-          <TextField label="User name" variant="outlined" sx={{ width: '300px' }} />
-          <div style={{ display: 'flex', flexDirection: 'row', marginTop: '10px' }}>
-            <TextField label="Password" variant="outlined" type="password" sx={{ width: '180px', marginRight: '10px' }} />
-            <TextField label="Confirm Password" variant="outlined" type="password" sx={{ width: '180px' }} />
-          </div>
-        </div>
-        <Button variant="contained" sx={{ textTransform: 'none', width: '300px' }}> Registrarse </Button>
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-          <p>¿Ya tienes una cuenta?</p>
-          <button className='register-login-register-button' onClick={() => setLogin(!login)}> Iniciar sesión </button>
-        </div>
-      </>
-    );
+  const handleInputChange = (event) => {
+    setDatos({
+      ...datos,
+      [event.target.name]: event.target.value
+    })
+    if (datos.userName !== '' && datos.password !== '') {
+      setCanLogin(true)
+    } else {
+      setCanLogin(false)
+    }
   }
+
+  const CheckPassword = (event) => {
+    let check = datos.password === event.target.value;
+    setSamePassword(!check);
+    setCanRegister(check);
+  }
+
+  async function SendDataRegisterUser() {
+    const response = await RegisterUser({ user: datos });
+    if (response !== -1) {
+      handleClose()
+    }
+  }
+  async function SendDataLoginUser() {
+    const response = await LoginUser({ user: datos });
+    if (response !== -1) {
+      setLogin({
+        logedIn: true,
+        token: response.token,
+        firstName: response.firstName,
+        userName: datos.userName,
+        password: datos.password
+      })
+
+      //handleClose()
+    }
+  }
+
+  const [loginModal, setLoginModal] = React.useState(false);
+
+  const LoginUserModal = (
+    <>
+      <div className='register-login-header'>
+        <Button variant="text" onClick={handleClose} sx={{ borderRadius: 50, minWidth: '35px', fontSize: 15, color: 'black' }}> X </Button>
+        <TwitterIcon fontSize='large' sx={{ color: '#55ACEE', marginLeft: '-40px' }} />
+        <div></div>
+      </div>
+      <h1 > Inicia sesión en Twitter </h1>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <TextField label="User name" value={datos.userName} variant="outlined" name='userName' onChange={handleInputChange} sx={{ width: '300px' }} />
+        <TextField label="Password" variant="outlined" name='password' onChange={handleInputChange} type="password" sx={{ marginTop: '10px', width: '300px' }} />
+      </div>
+      <Button variant="contained" sx={{ textTransform: 'none', width: '300px' }} onClick={() => SendDataLoginUser()} disabled={!canLogin}> Iniciar sesion </Button>
+      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+        <p>¿No tienes una cuenta?</p>
+        <button className='register-login-register-button' onClick={() => setLoginModal(!loginModal)} > Regístrate </button>
+      </div>
+    </>
+  );
+
+  const RegisterUserModal = (
+    <>
+      <div key={"esta"} className='register-login-header'>
+        <Button variant="text" onClick={handleClose} sx={{ borderRadius: 50, minWidth: '35px', fontSize: 15, color: 'black' }}> X </Button>
+        <TwitterIcon fontSize='large' sx={{ color: '#55ACEE', marginLeft: '-40px' }} />
+        <div></div>
+      </div>
+      <h1 > Únete a Twitter hoy mismo </h1>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <TextField label="First name" value={datos.firstName} variant="outlined" name='firstName' onChange={handleInputChange} sx={{ width: '180px', marginRight: '10px' }} />
+          <TextField label="Last name" value={datos.lastName} variant="outlined" name='lastName' onChange={handleInputChange} sx={{ width: '180px' }} />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'row', marginTop: '10px' }}>
+          <TextField label="email" value={datos.email} variant="outlined" name='email' onChange={handleInputChange} sx={{ width: '250px' }} />
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={datos.gender}
+            label="Gender"
+            name='gender'
+            onChange={handleInputChange}
+            sx={{ width: '120px' }}
+          >
+            <MenuItem value='male'>Male</MenuItem>
+            <MenuItem value='female'>Female</MenuItem>
+            <MenuItem value='non binary'>Non binary</MenuItem>
+            <MenuItem value='other'>Other</MenuItem>
+          </Select>
+        </div>
+        <TextField label="Bio" value={datos.bio} multiline rows={4} variant="outlined" inputProps={{ maxLength: 255 }} name='bio' onChange={handleInputChange} sx={{ width: '370px', marginTop: '10px' }} />
+        <TextField label="User name" value={datos.userName} variant="outlined" name='userName' onChange={handleInputChange} sx={{ width: '300px', marginTop: '10px' }} />
+        <div style={{ display: 'flex', flexDirection: 'row', marginTop: '10px' }}>
+          <TextField label="Password" variant="outlined" name='password' onChange={handleInputChange} type="password" sx={{ width: '180px', marginRight: '10px' }} />
+          <TextField label="Confirm Password" error={samePassword} onChange={CheckPassword} variant="outlined" type="password" sx={{ width: '180px' }} />
+        </div>
+      </div>
+      <Button variant="contained" sx={{ textTransform: 'none', width: '300px' }} onClick={() => SendDataRegisterUser()} disabled={!canRegister}> Registrarse </Button>
+      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+        <p>¿Ya tienes una cuenta?</p>
+        <button className='register-login-register-button' onClick={() => setLoginModal(!loginModal)}> Iniciar sesión </button>
+      </div>
+    </>
+  );
 
   return (
     <>
@@ -99,7 +156,7 @@ function Register_Login(props) {
         aria-describedby="modal-modal-description"
       >
         <div className='register-login-modal' >
-          {login ? <LoginUser /> : <RegisterUser />}
+          {loginModal ? LoginUserModal : RegisterUserModal}
         </div>
       </Modal>
 
@@ -112,7 +169,7 @@ function Register_Login(props) {
         </div>
         <div>
           <Button variant="outlined"
-            onClick={() => { setOpen(true); setLogin(true); }}
+            onClick={() => { setOpen(true); setLoginModal(true); }}
             sx={{
               borderColor: '#F5F8FA',
               borderRadius: '50px',
@@ -124,7 +181,7 @@ function Register_Login(props) {
             Iniciar sesión
           </Button>
           <Button variant="outlined"
-            onClick={() => { setOpen(true); setLogin(false) }}
+            onClick={() => { setOpen(true); setLoginModal(false) }}
             sx={{
               backgroundColor: '#F5F8FA',
               borderRadius: '50px',

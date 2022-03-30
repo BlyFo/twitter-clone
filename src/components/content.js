@@ -10,13 +10,17 @@ import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutline
 
 import { styled } from '@mui/material/styles';
 
-function Content(props) {
+import { SendTweet } from '../services/endPoints';
+
+function Content({ userProfile }) {
+
+  const [tweetContent, setTweetContent] = React.useState('');
 
   const tweets = [
     { 'username': "user_name1", 'name': "name1", "created_at": "now", 'content': "tweeta aaaaaaaa a a a a ", 'likes': 12, 'comments': 1 },
     { 'username': "user_name2", 'name': "name2", "created_at": "now", 'content': "tweet", 'likes': 32, 'comments': 124 },
     { 'username': "user_name3", 'name': "name3", "created_at": "now", 'content': "tweet", 'likes': 82, 'comments': 16 }
-  ]
+  ];
 
   const FavoriteButton = styled(FavoriteBorderOutlinedIcon)(({ theme }) => ({
     '&:hover': {
@@ -29,6 +33,16 @@ function Content(props) {
       color: 'blue',
     },
   }));
+
+  async function sendATweet() {
+    const tweetToSend = {
+      reply_to: 0,
+      user_name: userProfile.userName,
+      content: tweetContent
+    }
+    const response = await SendTweet({ token: userProfile.token, tweetInfo: tweetToSend })
+    console.log(response)
+  }
 
   const TweetSomething = () => {
     return (
@@ -45,14 +59,19 @@ function Content(props) {
             style={{ width: '92%', fontSize: 20 }}
             sx={{ fontSize: 20 }}
             inputProps={{ maxLength: 255, style: { fontSize: 20 } }}
+            value={tweetContent}
+            onChange={event => setTweetContent(event.target.value)}
           />
-          <Button variant="contained" sx={{
-            borderRadius: 50,
-            width: 80,
-            marginTop: '20px',
-            marginBottom: '10px',
-            marginLeft: '77%'
-          }}>
+          <Button variant="contained"
+            sx={{
+              borderRadius: 50,
+              width: 80,
+              marginTop: '20px',
+              marginBottom: '10px',
+              marginLeft: '77%'
+            }}
+            onClick={() => sendATweet()}
+          >
             <p style={{ margin: 0, padding: 0, textTransform: 'none' }}>Tweet</p>
           </Button>
         </div>

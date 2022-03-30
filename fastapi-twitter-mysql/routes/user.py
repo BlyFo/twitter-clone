@@ -94,7 +94,10 @@ def login_user(user: LoginUser):
         )
 
     token = auth_handler.encode_token(user.user_name)
-    return {'token': token}
+    return {
+        'token': token,
+        'firstName': user_info.first_name
+    }
 
 
 @user.get(

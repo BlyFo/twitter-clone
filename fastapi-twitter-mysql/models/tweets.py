@@ -10,8 +10,6 @@ tweets = Table("tweets", meta,
                Column("created_at", DateTime),
                Column("likes_count", Integer),
                Column("comments_count", Integer),
-               Column("likes", JSON),
-               Column("comments", JSON),
                Column("hashtags", JSON)
                )
 
