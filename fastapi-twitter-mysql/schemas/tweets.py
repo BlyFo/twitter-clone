@@ -17,6 +17,10 @@ class FullTweetInfo(TweetInfo):
     comment_by: List[str]
 
 
+class UserNameTweet(BaseModel):
+    user_name: str = Field(...)
+
+
 class BaseTweet(BaseModel):
     reply_to: Optional[int] = Field(default=None, ge=0)
     user_name: str = Field(
@@ -41,4 +45,5 @@ class SimpleTweet(BaseTweet):
 class FullTweet(BaseTweet):
     tweet_id: int = Field(..., ge=0)
     info: FullTweetInfo
+    first_name: str = Field(...)
     created_at: datetime = Field(default=datetime.now())

@@ -1,16 +1,20 @@
 import json
-from typing import List
+from typing import List, Optional
 from datetime import datetime
+from pydantic import Field
 
-from fastapi import APIRouter, status, HTTPException, Depends
+from fastapi import APIRouter, status, HTTPException, Depends, Header
 
 from config.db import conn
 from models.tweets import tweets
 from models.hashtags import hashtags
 from models.commented_by import commented_by
 from models.liked_by import liked_by
-from schemas.tweets import BaseTweet, TweetInfo, FullTweet, SimpleTweet, FullTweetInfo
+from models.users import users
+from schemas.tweets import BaseTweet, TweetInfo, FullTweet, SimpleTweet, FullTweetInfo, UserNameTweet
 from authentication.auth import AuthHandler
+
+from sqlalchemy import desc
 
 tweet_router = APIRouter(
     prefix="/tweets",
@@ -20,12 +24,28 @@ tweet_router = APIRouter(
 auth_handler = AuthHandler()
 
 
-def create_tweet(tweet_result):
+def create_tweet(tweet_result, user_name):
+
+    liked_result = conn.execute(liked_by.select().where(
+        liked_by.c.tweet_id == tweet_result.tweet_id and liked_by.c.user_name == user_name)
+    ).first()
+    liked_by_user = False
+    if liked_result != None:
+        print('entro')
+        liked_by_user = True
+
+    comment_result = conn.execute(commented_by.select().where(
+        commented_by.c.tweet_id == tweet_result.tweet_id and commented_by.c.user_name == user_name)
+    ).first()
+    commented_by_user = False
+    if comment_result != None:
+        commented_by_user = True
+
     temp_dict = TweetInfo(
         like_count=tweet_result.likes_count,
-        liked_by=tweet_result.likes,
+        liked=liked_by_user,
         comment_count=tweet_result.comments_count,
-        comment_by=tweet_result.comments
+        commented=commented_by_user
     )
     tweet_response = FullTweet(
         tweet_id=tweet_result.tweet_id,
@@ -38,16 +58,69 @@ def create_tweet(tweet_result):
     return tweet_response
 
 
+def create_fullTweet(tweet_result, user_name):
+
+    like_result = conn.execute(liked_by.select().where(
+        liked_by.c.tweet_id == tweet_result.tweet_id and liked_by.c.user_name == user_name)
+    ).first()
+    liked_by_user = False
+    if like_result != None:
+        print('entro')
+        liked_by_user = True
+
+    comment_result = conn.execute(commented_by.select().where(
+        commented_by.c.tweet_id == tweet_result.tweet_id and commented_by.c.user_name == user_name)
+    ).first()
+    commented_by_user = False
+    if comment_result != None:
+        commented_by_user = True
+
+    liked_result = conn.execute(liked_by.select().where(
+        liked_by.c.tweet_id == tweet_result.tweet_id)
+    ).fetchall()
+
+    commented_result = conn.execute(commented_by.select().where(
+        commented_by.c.tweet_id == tweet_result.tweet_id)
+    ).fetchall()
+
+    user_first_name = conn.execute(users.select().where(
+        users.c.user_name == tweet_result.user_name
+    )).first()
+
+    temp_dict = FullTweetInfo(
+        like_count=tweet_result.likes_count,
+        liked=liked_by_user,
+        liked_by=liked_result,
+        comment_count=tweet_result.comments_count,
+        commented=commented_by_user,
+        comment_by=commented_result,
+    )
+    tweet_response = FullTweet(
+        tweet_id=tweet_result.tweet_id,
+        reply_to=tweet_result.reply_to,
+        user_name=tweet_result.user_name,
+        first_name=user_first_name.first_name,
+        content=tweet_result.content,
+        created_at=tweet_result.created_at,
+        info=temp_dict
+    )
+    return tweet_response
+
+
 @tweet_router.get(path="/",
                   response_model=List[FullTweet],
                   status_code=status.HTTP_200_OK,
                   summary="get all tweets"
                   )
-def get_tweets():
-    table = conn.execute(tweets.select()).fetchall()
+def get_tweets(user_name: Optional[str] = Header(None)):
+
+    table = conn.execute(
+        tweets.select().order_by(desc(tweets.c.created_at))
+    ).fetchall()
+
     all_tweets = []
     for tweet in table:
-        tweet_response = create_tweet(tweet)
+        tweet_response = create_fullTweet(tweet, user_name)
         all_tweets.append(tweet_response)
     return all_tweets
 
@@ -58,9 +131,6 @@ def get_tweets():
                    summary="create a tweet",
                    )
 def create_Tweet(tweet: BaseTweet, token_username=Depends(auth_handler.auth_wrapper)):
-
-    print(tweet)
-
     new_tweet = tweet.dict()
 
     if new_tweet['user_name'] != token_username:
@@ -70,7 +140,7 @@ def create_Tweet(tweet: BaseTweet, token_username=Depends(auth_handler.auth_wrap
 
     new_hashtags = new_tweet['content']
     hashtags_list = {
-        new_hashtags.strip("#") for tag in new_hashtags.split() if new_hashtags.startswith("#")
+        tag.strip("#") for tag in new_hashtags.split() if tag.startswith("#")
     }
 
     for item in hashtags_list:
@@ -84,15 +154,14 @@ def create_Tweet(tweet: BaseTweet, token_username=Depends(auth_handler.auth_wrap
                 .values(name=item, count=0)
             )
         else:
-            conn.execute(tweets.update().values(
-                count=result.count
-            ).where(tweets.c.name == item))
+            conn.execute(hashtags.update().values(
+                count=result.count+1
+            ).where(hashtags.c.name == item))
 
     new_tweet['created_at'] = datetime.now()
     new_tweet['likes_count'] = 0
     new_tweet['comments_count'] = 0
-    new_tweet['liked'] = False
-    new_tweet['commented'] = False
+    new_tweet['hashtags'] = list(hashtags_list)
 
     inserted_result = conn.execute(
         tweets.insert()
@@ -112,7 +181,7 @@ def create_Tweet(tweet: BaseTweet, token_username=Depends(auth_handler.auth_wrap
 
     if new_tweet['reply_to'] != None:
 
-        old_tweet = get_tweet(new_tweet['reply_to'])
+        old_tweet = get_tweet(new_tweet['reply_to'], new_tweet['user_name'])
 
         conn.execute(tweets.update().values(
             comments_count=old_tweet.info['comment_count']+1,
@@ -121,9 +190,9 @@ def create_Tweet(tweet: BaseTweet, token_username=Depends(auth_handler.auth_wrap
 
     temp_dict = TweetInfo(
         like_count=new_tweet['likes_count'],
-        liked=new_tweet['liked'],
+        liked=False,
         comment_count=new_tweet['comments_count'],
-        commented=new_tweet['commented']
+        commented=False
     )
     tweet_response = SimpleTweet(
         tweet_id=result.tweet_id,

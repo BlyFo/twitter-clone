@@ -48,7 +48,6 @@ export const LoginUser = async ({ user }) => {
 export const SendTweet = async ({ token, tweetInfo }) => {
 
     const header = "/tweets/create";
-    console.log(tweetInfo)
     try {
         const resPut = await axios.post(api + header, tweetInfo, {
             headers: {
@@ -56,6 +55,26 @@ export const SendTweet = async ({ token, tweetInfo }) => {
             }
         })
         if (resPut.status === 201) {
+            return resPut.data
+        } else {
+            return -1
+        }
+    } catch (error) {
+        console.log(error)
+        return -1
+    }
+}
+export const getTweets = async ({ userName }) => {
+
+    const header = "/tweets/";
+    console.log(userName)
+    try {
+        const resPut = await axios.get(api + header, {
+            headers: {
+                'User-Name': userName
+            }
+        })
+        if (resPut.status === 200) {
             return resPut.data
         } else {
             return -1
