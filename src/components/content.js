@@ -5,18 +5,23 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
-//import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
+import DeleteIcon from '@mui/icons-material/Delete';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 
 import { styled } from '@mui/material/styles';
 
-import { SendTweet } from '../services/endPoints';
+import { SendTweet, LikeTweet, DeleteTweet } from '../services/endPoints';
 
-function Content({ userProfile, tweets, done }) {
+function Content({ userProfile, tweets, done, setTweets }) {
 
   const [tweetContent, setTweetContent] = React.useState('');
 
   const FavoriteButton = styled(FavoriteBorderOutlinedIcon)(({ theme }) => ({
+    '&:hover': {
+      color: 'red',
+    },
+  }));
+  const DeletePostIcon = styled(DeleteIcon)(({ theme }) => ({
     '&:hover': {
       color: 'red',
     },
@@ -27,6 +32,37 @@ function Content({ userProfile, tweets, done }) {
       color: 'blue',
     },
   }));
+
+  async function LikeTweetContent(tweetId) {
+    const response = await LikeTweet({
+      token: userProfile.token,
+      tweetId: tweetId,
+      userName: userProfile.userName
+    })
+    setTweets(
+      tweets.map(item =>
+        item.tweet_id === tweetId
+          ? {
+            ...response
+          }
+          : item
+      )
+    )
+  }
+  async function DeleteTweetContent(tweetId) {
+    const response = await DeleteTweet({
+      token: userProfile.token,
+      tweetId: tweetId,
+      userName: userProfile.userName
+    })
+    if (response !== -1) {
+      setTweets(
+        tweets.filter(item =>
+          item.tweet_id !== tweetId
+        )
+      )
+    }
+  }
 
   function TimeSince(date) {
 
@@ -107,8 +143,8 @@ function Content({ userProfile, tweets, done }) {
     return (
       <>
         {
-          tweets.map((tweet, i) => (
-            <div key={"posted tweet " + i} className='content-tweet-container'>
+          tweets.map((tweet) => (
+            <div key={"posted tweet " + tweet.tweet_id} className='content-tweet-container'>
               <img
                 src={require('../images/default_profile_400x400.png')}
               />
@@ -119,13 +155,22 @@ function Content({ userProfile, tweets, done }) {
                   <p> {"@" + tweet.user_name}</p>
                   <p>•</p>
                   <p> {TimeSince(tweet.created_at)}</p>
+                  {
+                    (tweet.user_name === userProfile.userName) &&
+                    <DeletePostIcon
+                      sx={{ fontSize: '20px', marginLeft: '29%' }}
+                      onClick={() => DeleteTweetContent(tweet.tweet_id)}
+                    />
+                  }
                 </div>
-                {/* post content */}
+                {/* post's content */}
                 <p>{tweet.content}</p>
-                {/* post likes and coments */}
+                {/* post's likes and coments */}
                 <div className='content-tweet-content-buttons'>
-                  <button className='button-like'>
-                    <FavoriteButton sx={{ fontSize: '20px' }} />
+                  <button className={tweet.info.liked ? 'button-like-activate' : 'button-like'}
+                    onClick={() => LikeTweetContent(tweet.tweet_id)}
+                  >
+                    <FavoriteButton sx={{ fontSize: '20px', color: tweet.info.liked ? 'red' : 'black' }} />
                     <p>{tweet.info.like_count}</p>
                   </button>
                   <button className='button-reply'>

@@ -31,7 +31,6 @@ def create_tweet(tweet_result, user_name):
     ).first()
     liked_by_user = False
     if liked_result != None:
-        print('entro')
         liked_by_user = True
 
     comment_result = conn.execute(commented_by.select().where(
@@ -61,15 +60,15 @@ def create_tweet(tweet_result, user_name):
 def create_fullTweet(tweet_result, user_name):
 
     like_result = conn.execute(liked_by.select().where(
-        liked_by.c.tweet_id == tweet_result.tweet_id and liked_by.c.user_name == user_name)
+        liked_by.c.tweet_id == tweet_result.tweet_id, liked_by.c.user_name == user_name)
     ).first()
+
     liked_by_user = False
     if like_result != None:
-        print('entro')
         liked_by_user = True
 
     comment_result = conn.execute(commented_by.select().where(
-        commented_by.c.tweet_id == tweet_result.tweet_id and commented_by.c.user_name == user_name)
+        commented_by.c.tweet_id == tweet_result.tweet_id, commented_by.c.user_name == user_name)
     ).first()
     commented_by_user = False
     if comment_result != None:
@@ -78,10 +77,12 @@ def create_fullTweet(tweet_result, user_name):
     liked_result = conn.execute(liked_by.select().where(
         liked_by.c.tweet_id == tweet_result.tweet_id)
     ).fetchall()
+    liked_result_list = map(lambda x: x['user_name'], liked_result)
 
     commented_result = conn.execute(commented_by.select().where(
         commented_by.c.tweet_id == tweet_result.tweet_id)
     ).fetchall()
+    commented_result_list = map(lambda x: x['user_name'], commented_result)
 
     user_first_name = conn.execute(users.select().where(
         users.c.user_name == tweet_result.user_name
@@ -90,10 +91,10 @@ def create_fullTweet(tweet_result, user_name):
     temp_dict = FullTweetInfo(
         like_count=tweet_result.likes_count,
         liked=liked_by_user,
-        liked_by=liked_result,
+        liked_by=list(liked_result_list),
         comment_count=tweet_result.comments_count,
         commented=commented_by_user,
-        comment_by=commented_result,
+        comment_by=list(commented_result_list),
     )
     tweet_response = FullTweet(
         tweet_id=tweet_result.tweet_id,
@@ -224,28 +225,13 @@ def get_tweet(tweet_id: str, user_name: str):
             detail="Tweet not found"
         )
 
-    like_result = conn.execute(
-        liked_by.select().where(
-            liked_by.c.tweet_id == tweet_id and liked_by.c.user_name == user_name
-        )
-    )
-
-    comment_result = conn.execute(
-        commented_by.select().where(
-            commented_by.c.tweet_id == tweet_id and commented_by.c.user_name == user_name
-        )
-    )
-
-    print(like_result)
-    print(comment_result)
-
-    tweet_response = create_tweet(tweet_result, like_result, comment_result)
+    tweet_response = create_fullTweet(tweet_result, user_name)
 
     return tweet_response
 
 
-@tweet_router.delete(
-    path="/{tweet_id}",
+@tweet_router.put(
+    path="/delete/{tweet_id}",
     status_code=status.HTTP_200_OK,
     response_model=FullTweet,
     summary="delete a tweet",
@@ -266,6 +252,8 @@ def delete_tweet(tweet_id: int, user_name: str, token_username=Depends(auth_hand
             status_code=status.HTTP_404_NOT_FOUND, detail="tweet not found"
         )
 
+    conn.execute(liked_by.delete().where(liked_by.c.tweet_id == tweet_id))
+
     conn.execute(tweets.delete().where(tweets.c.tweet_id == tweet_id))
 
     check_deleted = conn.execute(
@@ -276,7 +264,7 @@ def delete_tweet(tweet_id: int, user_name: str, token_username=Depends(auth_hand
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="tweet could not be deleted"
         )
-    result = create_tweet(deleted_tweet)
+    result = create_fullTweet(deleted_tweet, user_name)
     return result
 
 
@@ -316,17 +304,33 @@ def like_tweet(tweet_id: int, user_name: str, token_username=Depends(auth_handle
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication error"
         )
+    old_tweet = get_tweet(tweet_id, user_name)
 
-    old_tweet = get_tweet(tweet_id)
+    like_result = conn.execute(
+        liked_by.select().where(liked_by.c.tweet_id ==
+                                tweet_id and liked_by.c.user_name == user_name)
+    ).first()
 
-    if user_name in old_tweet.info['liked_by']:
-        return old_tweet
+    if like_result == None:
+        # the user never liked the tweet
+        conn.execute(tweets.update().values(
+            likes_count=old_tweet.info['like_count']+1,
+        ).where(tweets.c.tweet_id == tweet_id))
 
-    conn.execute(tweets.update().values(
-        likes_count=old_tweet.info['like_count']+1,
-        likes=old_tweet.info['liked_by'] + [user_name]
-    ).where(tweets.c.tweet_id == tweet_id))
+        conn.execute(
+            liked_by.insert()
+            .values(tweet_id=tweet_id, user_name=user_name)
+        )
+    else:
+        conn.execute(tweets.update().values(
+            likes_count=old_tweet.info['like_count']-1,
+        ).where(tweets.c.tweet_id == tweet_id))
 
-    result = get_tweet(tweet_id)
+        conn.execute(
+            liked_by.delete()
+            .where(liked_by.c.tweet_id == tweet_id and liked_by.c.user_name == user_name)
+        )
+
+    result = get_tweet(tweet_id, user_name)
 
     return result

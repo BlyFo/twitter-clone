@@ -67,11 +67,58 @@ export const SendTweet = async ({ token, tweetInfo }) => {
 export const getTweets = async ({ userName }) => {
 
     const header = "/tweets/";
-    console.log(userName)
     try {
         const resPut = await axios.get(api + header, {
             headers: {
                 'User-Name': userName
+            }
+        })
+        if (resPut.status === 200) {
+            return resPut.data
+        } else {
+            return -1
+        }
+    } catch (error) {
+        console.log(error)
+        return -1
+    }
+}
+export const LikeTweet = async ({ token, tweetId, userName }) => {
+
+    const header = "/tweets/like/" + tweetId;
+    try {
+        const resPut = await axios.put(api + header, {
+
+        }, {
+            params: {
+                user_name: userName
+            },
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        if (resPut.status === 200) {
+            return resPut.data
+        } else {
+            return -1
+        }
+    } catch (error) {
+        console.log(error)
+        return -1
+    }
+}
+export const DeleteTweet = async ({ token, tweetId, userName }) => {
+
+    const header = "/tweets/delete/" + tweetId + "?user_name=" + userName;
+    try {
+        const resPut = await axios.put(api + header, {
+
+        }, {
+            params: {
+                user_name: userName
+            },
+            headers: {
+                Authorization: `Bearer ${token}`
             }
         })
         if (resPut.status === 200) {

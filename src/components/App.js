@@ -24,19 +24,17 @@ function App() {
   }, [login])
 
   async function GetInfoOnStartUp() {
-    if (!done) {
-      const userInfo = await getTweets({ userName: login.userName });
-      if (userInfo !== -1) {
-        setTweets(userInfo);
-      }
-      setDone(true);
+    const userInfo = await getTweets({ userName: login.userName });
+    if (userInfo !== -1) {
+      setTweets(userInfo);
     }
+    setDone(true);
   }
 
   return (
     <div className='container'>
       <LeftBar login={login.logedIn} userProfile={{ userName: login.userName, firstName: login.firstName }} />
-      <Content userProfile={login} tweets={tweets} done={done} />
+      <Content userProfile={login} tweets={tweets} done={done} setTweets={setTweets} />
       <RightBar />
       {!login.logedIn && <Register_Login setLogin={setLogin} />}
     </div>
