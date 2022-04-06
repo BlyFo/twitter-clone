@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import Content from './content';
-import LeftBar from './leftBar';
-import RightBar from './rightBar';
-import Register_Login from './register_Login';
+import Test from './pages/test';
+import RootPage from './pages/rootPage';
+import ProfilePage from './pages/profilepage';
 
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { getTweets } from '../services/endPoints';
 
 function App() {
@@ -27,18 +28,22 @@ function App() {
     const userInfo = await getTweets({ userName: login.userName });
     if (userInfo !== -1) {
       setTweets(userInfo);
+      setDone(true);
     }
-    setDone(true);
   }
 
   return (
-    <div className='container'>
-      <LeftBar login={login.logedIn} userProfile={{ userName: login.userName, firstName: login.firstName }} />
-      <Content userProfile={login} tweets={tweets} done={done} setTweets={setTweets} />
-      <RightBar />
-      {!login.logedIn && <Register_Login setLogin={setLogin} />}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<RootPage login={login} setLogin={setLogin} />}>
+          <Route path='/test' element={<Test />} />
+          <Route path='/Home' element={<Content userProfile={login} tweets={tweets} done={done} setTweets={setTweets} />} />
+          <Route path='/Profile' element={<ProfilePage userProfile={login} tweets={tweets} done={done} setTweets={setTweets} />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
+
 }
 
 export default App;

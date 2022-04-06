@@ -334,3 +334,23 @@ def like_tweet(tweet_id: int, user_name: str, token_username=Depends(auth_handle
     result = get_tweet(tweet_id, user_name)
 
     return result
+
+
+@tweet_router.put(
+    path="/user/{user_name}",
+    status_code=status.HTTP_200_OK,
+    response_model=List[FullTweet],
+    summary="get a user's tweets",
+)
+def get_users_tweets(user_name: str):
+
+    table = conn.execute(
+        tweets.select().where(tweets.c.user_name == user_name).order_by(
+            desc(tweets.c.created_at))
+    ).fetchall()
+
+    all_tweets = []
+    for tweet in table:
+        tweet_response = create_fullTweet(tweet, user_name)
+        all_tweets.append(tweet_response)
+    return all_tweets

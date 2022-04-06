@@ -12,6 +12,8 @@ import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 import TagOutlinedIcon from '@mui/icons-material/TagOutlined';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 
+import { useNavigate } from "react-router-dom";
+
 function LeftBar({ login, userProfile }) {
 
   const profile = {
@@ -23,6 +25,8 @@ function LeftBar({ login, userProfile }) {
     borderRadius: '50px',
     color: 'black',
   }
+
+  const navigate = useNavigate();
 
   const Buttons = () => {
 
@@ -40,12 +44,12 @@ function LeftBar({ login, userProfile }) {
           <TwitterIcon fontSize='large' sx={{ color: '#55ACEE' }} />
         </Button>
         {login &&
-          <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
+          <Button variant="text" className='leftBar-button' sx={buttonsStyle} onClick={() => { navigate('/Home') }}>
             <HomeOutlinedIcon sx={{ fontSize: '30px' }} />
             <p>Home</p>
           </Button>
         }
-        <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
+        <Button variant="text" className='leftBar-button' sx={buttonsStyle} onClick={() => { navigate('/Home') }}>
           <TagOutlinedIcon sx={{ fontSize: '30px', color: 'black' }} />
           <p>Explore</p>
         </Button>
@@ -67,7 +71,7 @@ function LeftBar({ login, userProfile }) {
               <ArticleOutlinedIcon sx={{ fontSize: '30px' }} />
               <p>List</p>
             </Button>
-            <Button variant="text" className='leftBar-button' sx={buttonsStyle}>
+            <Button variant="text" className='leftBar-button' sx={buttonsStyle} onClick={() => { navigate('/Profile') }}>
               <PermIdentityIcon sx={{ fontSize: '30px' }} />
               <p>Profile</p>
             </Button>

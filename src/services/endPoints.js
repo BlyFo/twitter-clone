@@ -45,6 +45,22 @@ export const LoginUser = async ({ user }) => {
     }
 }
 
+export const getUser = async ({ userName }) => {
+
+    const header = "/users/" + userName;
+    try {
+        const resPut = await axios.get(api + header, {})
+        if (resPut.status === 200) {
+            return resPut.data
+        } else {
+            return -1
+        }
+    } catch (error) {
+        console.log(error)
+        return -1
+    }
+}
+
 export const SendTweet = async ({ token, tweetInfo }) => {
 
     const header = "/tweets/create";

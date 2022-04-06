@@ -1,0 +1,42 @@
+.profile-banner{
+    display: flex;
+    height: 520px;
+    min-height: 520px;
+    position: relative;
+    flex-direction: column;
+    border: 1px #E1E8ED;
+    border-style: none none solid none;
+}
+.profile-banner > p{
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    text-align: center;
+    font-size: 18;
+    font-weight: bold;
+}
+.profile-banner-image{
+    display: flex;
+    height: 250px;
+    width: 100%;
+
+    background-color: #E1E8ED;;
+}
+.profile-banner-avatar{
+    position:absolute ;
+    top: 185px;
+    left: 20px;
+    height: 120px;
+    width: 120px;
+    border-radius: 50%;
+    border: 3px solid white;
+}
+.profile-banner-userInfo{
+    display: flex;
+    flex-direction: column;
+    margin-top: 70px;
+    margin-left: 20px;
+}
+.profile-banner-userInfo > p{
+   margin: 0px;
+}

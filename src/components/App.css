@@ -21,6 +21,17 @@
   width: 100vw;
   min-width: 540px;
 }
+.content-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border: 1px solid #E1E8ED;
+  border-style: none solid none solid;
+  height: 100vh;
+  max-width: 600px;
+  min-width: 480px;
+  overflow-y: scroll;
+}
 
 @keyframes App-logo-spin {
   from {
