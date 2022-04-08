@@ -4,29 +4,41 @@ import './showTweets.css'
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
+import { Modal } from '@mui/material';
 
 import { styled } from '@mui/material/styles';
 import { LikeTweet, DeleteTweet } from '../services/endPoints';
-
+import { useNavigate } from "react-router-dom";
+import MakeComment from './makeComment';
 
 function ShowTweets({ userProfile, tweets, setTweets }) {
 
   const FavoriteButton = styled(FavoriteBorderOutlinedIcon)(({ theme }) => ({
     '&:hover': {
       color: 'red',
+      cursor: 'pointer'
     },
   }));
   const DeletePostIcon = styled(DeleteIcon)(({ theme }) => ({
     '&:hover': {
       color: 'red',
+      cursor: 'pointer'
     },
   }));
 
   const ReplyButton = styled(ChatBubbleOutlineOutlinedIcon)(({ theme }) => ({
     '&:hover': {
       color: 'blue',
+      cursor: 'pointer'
     },
   }));
+
+  const navigate = useNavigate();
+  const [tweetID, setTweetID] = React.useState()
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  }
 
   async function LikeTweetContent(tweetId) {
     const response = await LikeTweet({
@@ -84,7 +96,7 @@ function ShowTweets({ userProfile, tweets, setTweets }) {
     }
     interval = seconds / 60;
     if (interval > 1) {
-      return Math.floor(interval) + " minutes.";
+      return Math.floor(interval) + " m.";
     }
     return " just now.";
   }
@@ -100,14 +112,19 @@ function ShowTweets({ userProfile, tweets, setTweets }) {
             <div className='content-tweet-content'>
               {/* post tittle */}
               <div className='content-tweet-content-tittle'>
-                <p> {tweet.first_name}</p>
+                <button
+                  className='content-tweet-content-userName'
+                  onClick={() => { navigate('/Profile/' + tweet.user_name) }}
+                >
+                  {tweet.first_name}
+                </button>
                 <p> {"@" + tweet.user_name}</p>
                 <p>•</p>
                 <p> {TimeSince(tweet.created_at)}</p>
                 {
                   (tweet.user_name === userProfile.userName) &&
                   <DeletePostIcon
-                    sx={{ fontSize: '20px', marginLeft: '29%' }}
+                    sx={{ fontSize: '20px', position: 'absolute', right: 15 }}
                     onClick={() => DeleteTweetContent(tweet.tweet_id)}
                   />
                 }
@@ -123,7 +140,7 @@ function ShowTweets({ userProfile, tweets, setTweets }) {
                   <p>{tweet.info.like_count}</p>
                 </button>
                 <button className='button-reply'>
-                  <ReplyButton sx={{ fontSize: '20px' }} />
+                  <ReplyButton sx={{ fontSize: '20px' }} onClick={() => { setOpen(true); setTweetID(tweet.tweet_id); }} />
                   <p>{tweet.info.comment_count}</p>
                 </button>
               </div>
@@ -131,6 +148,16 @@ function ShowTweets({ userProfile, tweets, setTweets }) {
           </div>
         ))
       }
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <div className='leftBar-tweet-modal' >
+          <MakeComment userProfile={userProfile} tweet_id={tweetID} />
+        </div>
+      </Modal>
     </>
   );
 }

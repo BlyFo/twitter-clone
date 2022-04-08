@@ -1,7 +1,7 @@
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 
-from fastapi import APIRouter, status, HTTPException, Depends
+from fastapi import APIRouter, status, HTTPException, Depends, Header
 
 from models.users import users
 from schemas.user import User, BaseUser, LoginUser
@@ -25,8 +25,15 @@ auth_handler = AuthHandler()
     status_code=status.HTTP_200_OK,
     summary="get all users",
 )
-def get_users():
-    return conn.execute(users.select()).fetchall()
+def get_users(user_name: Optional[str] = Header(None)):
+    users_list = conn.execute(
+        users.select().where(users.c.user_name != user_name)
+    ).fetchall()
+
+    # users_list = filter(
+    # lambda user: user['user_name'] != user_name, users_list)
+    #users_list = list(users_list)
+    return users_list
 
 
 @user.post(

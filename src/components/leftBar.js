@@ -2,6 +2,7 @@ import React from 'react';
 import './leftBar.css'
 
 import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
@@ -12,13 +13,13 @@ import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 import TagOutlinedIcon from '@mui/icons-material/TagOutlined';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 
+import MakeTweet from './makeTweet';
+
 import { useNavigate } from "react-router-dom";
 
-function LeftBar({ login, userProfile }) {
+function LeftBar({ login, userProfile, updatePage }) {
 
   const profile = {
-    //height: '65px',
-    //width: '250px',
     marginBottom: '10px',
     marginTop: '20px',
     marginRight: '0px',
@@ -27,6 +28,11 @@ function LeftBar({ login, userProfile }) {
   }
 
   const navigate = useNavigate();
+
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  }
 
   const Buttons = () => {
 
@@ -51,7 +57,7 @@ function LeftBar({ login, userProfile }) {
         }
         <Button variant="text" className='leftBar-button' sx={buttonsStyle} onClick={() => { navigate('/Home') }}>
           <TagOutlinedIcon sx={{ fontSize: '30px', color: 'black' }} />
-          <p>Explore</p>
+          <p >Explore</p>
         </Button>
         {login &&
           <>
@@ -71,7 +77,7 @@ function LeftBar({ login, userProfile }) {
               <ArticleOutlinedIcon sx={{ fontSize: '30px' }} />
               <p>List</p>
             </Button>
-            <Button variant="text" className='leftBar-button' sx={buttonsStyle} onClick={() => { navigate('/Profile') }}>
+            <Button variant="text" className='leftBar-button' sx={buttonsStyle} onClick={() => { navigate('/Profile/' + userProfile.userName) }}>
               <PermIdentityIcon sx={{ fontSize: '30px' }} />
               <p>Profile</p>
             </Button>
@@ -79,8 +85,8 @@ function LeftBar({ login, userProfile }) {
               <MoreHorizOutlinedIcon sx={{ fontSize: '30px' }} />
               <p>More</p>
             </Button>
-            <Button variant="contained" className='leftBar-button' sx={buttonsStyle}>
-              <p style={{ marginLeft: '0px', fontWeight: 'bold' }}>Tweet</p>
+            <Button variant="contained" className='leftBar-button' sx={buttonsStyle} onClick={() => setOpen(true)}>
+              <p style={{ marginLeft: '0px', fontWeight: 'bold', color: 'white' }}>Tweet</p>
             </Button >
           </>
         }
@@ -88,23 +94,35 @@ function LeftBar({ login, userProfile }) {
     )
   }
   return (
-    <div className='leftBar-container'>
-      <Buttons />
-      {login &&
-        <Button className='leftBar-profile' sx={profile}>
-          <img
-            src={require('../images/default_profile_400x400.png')}
-          />
-          <div className='leftBar-username'>
-            <p>{userProfile.firstName}</p>
-            <p>{"@" + userProfile.userName}</p>
-          </div>
-          <div>
-            <MoreHorizOutlinedIcon sx={{ marginLeft: '0px' }} />
-          </div>
-        </Button>
-      }
-    </div>
+    <>
+      <div className='leftBar-container'>
+        <Buttons />
+        {login &&
+          <Button className='leftBar-profile' sx={profile}>
+            <img
+              src={require('../images/default_profile_400x400.png')}
+            />
+            <div className='leftBar-username'>
+              <p>{userProfile.firstName}</p>
+              <p>{"@" + userProfile.userName}</p>
+            </div>
+            <div>
+              <MoreHorizOutlinedIcon sx={{ marginLeft: '0px' }} />
+            </div>
+          </Button>
+        }
+      </div>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <div className='leftBar-tweet-modal' >
+          <MakeTweet userProfile={userProfile} updatePage={updatePage} />
+        </div>
+      </Modal>
+    </>
   );
 }
 

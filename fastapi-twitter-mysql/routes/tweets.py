@@ -336,7 +336,7 @@ def like_tweet(tweet_id: int, user_name: str, token_username=Depends(auth_handle
     return result
 
 
-@tweet_router.put(
+@tweet_router.get(
     path="/user/{user_name}",
     status_code=status.HTTP_200_OK,
     response_model=List[FullTweet],

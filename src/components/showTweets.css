@@ -8,6 +8,7 @@
     height: fit-content;
     padding-left: 20px;
     padding-top: 20px;
+    cursor: pointer;
 }
 .content-tweet-container:hover{
     background-color: #F5F8FA;
@@ -41,8 +42,18 @@
 .content-tweet-content-tittle >p + p{
     margin-left: 5px;
 }
-.content-tweet-content-tittle >p:first-child{
+.content-tweet-content-userName{
+    border: none;
+    background: none;
     font-weight: bold;
+    font-size: 15px;
+    margin: 0px;
+    padding: 0px;
+    margin-right: 5px;
+}
+.content-tweet-content-userName:hover{
+    text-decoration: underline;
+    cursor: pointer;
 }
 .content-tweet-content-buttons{
     display: flex;
@@ -63,6 +74,11 @@
     border: none;
     background: none;
 }
+.content-tweet-content-buttons > button >p{
+    margin: 0px;
+    margin-left: 5px;
+    user-select: none;
+}
 .button-like-activate{
     color: red;
 }
@@ -71,7 +87,9 @@
 }
 .button-like:hover{
     color: red;
+    cursor: pointer
 }
 .button-reply:hover{
     color: blue;
+    cursor: pointer
 }

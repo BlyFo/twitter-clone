@@ -5,7 +5,7 @@ import LeftBar from '../leftBar';
 import RightBar from '../rightBar';
 import Register_Login from '../register_Login';
 
-function RootPage({ login, setLogin }) {
+function RootPage({ login, setLogin, updatePage }) {
 
   const navigate = useNavigate();
 
@@ -15,11 +15,13 @@ function RootPage({ login, setLogin }) {
 
   return (
     <div className='container'>
-      <LeftBar login={login.logedIn} userProfile={{ userName: login.userName, firstName: login.firstName }} />
+      <LeftBar login={login.logedIn} userProfile={login} updatePage={updatePage} />
+
       <div className='content-container'>
         <Outlet />
       </div>
-      <RightBar />
+
+      <RightBar login={login} />
       {!login.logedIn && <Register_Login setLogin={setLogin} />}
     </div>
   );

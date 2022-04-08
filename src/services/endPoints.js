@@ -44,7 +44,6 @@ export const LoginUser = async ({ user }) => {
         return -1
     }
 }
-
 export const getUser = async ({ userName }) => {
 
     const header = "/users/" + userName;
@@ -60,7 +59,6 @@ export const getUser = async ({ userName }) => {
         return -1
     }
 }
-
 export const SendTweet = async ({ token, tweetInfo }) => {
 
     const header = "/tweets/create";
@@ -135,6 +133,40 @@ export const DeleteTweet = async ({ token, tweetId, userName }) => {
             },
             headers: {
                 Authorization: `Bearer ${token}`
+            }
+        })
+        if (resPut.status === 200) {
+            return resPut.data
+        } else {
+            return -1
+        }
+    } catch (error) {
+        console.log(error)
+        return -1
+    }
+}
+export const getUserTweets = async ({ userName }) => {
+
+    const header = "/tweets/user/" + userName;
+    try {
+        const resPut = await axios.get(api + header, {})
+        if (resPut.status === 200) {
+            return resPut.data
+        } else {
+            return -1
+        }
+    } catch (error) {
+        console.log(error)
+        return -1
+    }
+}
+export const getUsers = async ({ userName }) => {
+
+    const header = "/users/";
+    try {
+        const resPut = await axios.get(api + header, {
+            headers: {
+                'User-Name': userName
             }
         })
         if (resPut.status === 200) {

@@ -5,7 +5,7 @@
     /*border: 1px solid red;*/
     padding-left: 30px;
     overflow-y: scroll;
-    /*overflow-x: hidden;*/
+    overflow-x: hidden;
 }
 @media screen and (max-width: 1010px){
     .rightBar-container{
@@ -51,12 +51,14 @@
     padding-top: 10px;
     padding-bottom: 10px;
     padding-left: 10px;
+    cursor: pointer;
 
 }
 .rightBar-content-button > img{
     height: 50px;
     width: 50px;
     border-radius: 50px;
+    margin-right: 10px;
 }
 .rightBar-content-button > p{
     margin: 0px;

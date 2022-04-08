@@ -1,9 +1,3 @@
-
-.content-tweet-content-buttons > button >p{
-    margin: 0px;
-    margin-left: 5px;
-    user-select: none;
-}
 .content-tweetSomething{
     display: flex;
     flex-direction: row;

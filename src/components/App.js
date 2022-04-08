@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import Content from './content';
-import Test from './pages/test';
 import RootPage from './pages/rootPage';
 import ProfilePage from './pages/profilepage';
 
@@ -35,10 +34,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<RootPage login={login} setLogin={setLogin} />}>
-          <Route path='/test' element={<Test />} />
-          <Route path='/Home' element={<Content userProfile={login} tweets={tweets} done={done} setTweets={setTweets} />} />
-          <Route path='/Profile' element={<ProfilePage userProfile={login} tweets={tweets} done={done} setTweets={setTweets} />} />
+        <Route path='/' element={<RootPage login={login} setLogin={setLogin} updatePage={GetInfoOnStartUp} />}>
+          <Route path='/Home' element={<Content userProfile={login} tweets={tweets} done={done} setTweets={setTweets} updatePage={GetInfoOnStartUp} />} />
+          <Route path='/Profile/:postSlug' element={<ProfilePage userProfile={login} />} />
         </Route>
       </Routes>
     </BrowserRouter>

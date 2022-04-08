@@ -2,22 +2,32 @@ import React, { useEffect, useState } from 'react';
 import './profilePage.css'
 import ShowTweets from '../showTweets';
 
-import { getUser } from '../../services/endPoints';
+import { getUser, getUserTweets } from '../../services/endPoints';
+import { useParams } from 'react-router-dom';
 
-function ProfilePage({ userProfile, tweets, done, setTweets }) {
+function ProfilePage({ userProfile }) {
 
   const [userInfo, setUserInfo] = useState('');
 
   const [userInfoReady, setUserInfoReady] = useState(false);
 
+  const [profileTweets, setProfileTweets] = useState('');
+
+  const { postSlug } = useParams();
+
+
   useEffect(() => {
     GetInfoOnStartUp();
-  }, [])
+  }, [postSlug])
 
   async function GetInfoOnStartUp() {
-    const userInfo = await getUser({ userName: userProfile.userName });
+    const userInfo = await getUser({ userName: postSlug });
     if (userInfo !== -1) {
       setUserInfo(userInfo);
+    }
+    const userTweets = await getUserTweets({ userName: postSlug })
+    if (userTweets !== -1) {
+      setProfileTweets(userTweets)
       setUserInfoReady(true);
     }
   }
@@ -38,10 +48,9 @@ function ProfilePage({ userProfile, tweets, done, setTweets }) {
         }
         <p>Tweets</p>
       </div>
-      {done && <ShowTweets userProfile={userProfile} tweets={tweets} setTweets={setTweets} />}
+      {userInfoReady && <ShowTweets userProfile={userProfile} tweets={profileTweets} setTweets={setProfileTweets} />}
     </>
   );
 }
 
 export default ProfilePage;
-//{done && <ShowTweets userProfile={userProfile} tweets={tweets} setTweets={setTweets} />}

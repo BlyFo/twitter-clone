@@ -1,11 +1,11 @@
 import React from 'react';
 
-function Test(props) {
+function CommentsPage(props) {
     return (
         <div>
-            <p>HOLAS</p>
+
         </div>
     );
 }
 
-export default Test;
+export default CommentsPage;

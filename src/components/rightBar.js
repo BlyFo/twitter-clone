@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './rightBar.css'
 
 import TextField from '@mui/material/TextField';
@@ -6,23 +6,42 @@ import Button from '@mui/material/Button';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 
+import { getUsers, getTweets } from '../services/endPoints';
+import { useNavigate } from "react-router-dom";
+
 //https://www.schemecolor.com/twitter-shades.php
 //https://www.onlinepalette.com/twitter/
 
-function RightBar(props) {
+function RightBar({ login }) {
 
-  const happening_list = [
-    { 'username': "holas", 'content': 'super cosa increible fuer ade este mundo mundial no lo vas a creeer nsfw', 'comments': 12 },
-    { 'username': "holas", 'content': 'super cosa increible fuer ade este mundo mundial no lo vas a creeer nsfw', 'comments': 12 },
-    { 'username': "holas", 'content': 'super cosa increible fuer ade este mundo mundial no lo vas a creeer nsfw', 'comments': 12 },
-    { 'username': "holas", 'content': 'super cosa increible fuer ade este mundo mundial no lo vas a creeer nsfw', 'comments': 12 }
-  ]
+  const navigate = useNavigate();
 
-  const users_list = [
-    { 'username': "holas", 'name': 'nsfw' },
-    { 'username': "holas", 'name': 'nsfw' },
-    { 'username': "holas", 'name': 'nsfw' }
-  ]
+  const [usersList, setUsersList] = useState([]);
+  const [tweetsList, setTweetsList] = useState([]);
+
+  const [userInfoReady, setUserInfoReady] = useState(false);
+
+  useEffect(() => {
+    GetInfoOnStartUp();
+  }, [login])
+
+  async function GetInfoOnStartUp() {
+    const userInfo = await getUsers({ userName: login.userName });
+    if (userInfo !== -1) {
+      setUsersList(userInfo)
+    }
+    const userTweets = await getTweets({ userName: '' })
+    if (userTweets !== -1) {
+      setTweetsList(userTweets.slice(0, 4))
+      setUserInfoReady(true);
+    }
+  }
+
+  const Search = () => {
+    return (
+      <TextField id="standard-basic" label="Standard" variant="standard" />
+    )
+  }
 
   const containerStyle = {
     width: '100%',
@@ -36,23 +55,19 @@ function RightBar(props) {
     borderBottomRightRadius: '20px'
   }
 
-  const Search = () => {
-    return (
-      <TextField id="standard-basic" label="Standard" variant="standard" />
-    )
-  }
+  const SubContainer = ({ tittle, children, path }) => {
 
-  const SubContainer = ({ tittle, children }) => {
-
-    return (
+    return userInfoReady ? (
       <div className='rightBar-subContainers' >
         <p>{tittle}</p>
+
         <div className='rightBar-content'>
           {children}
         </div>
-        <Button variant="text" sx={containerStyle}> ShowMore</Button>
+
+        <Button variant="text" sx={containerStyle} onClick={() => { navigate(path) }}> ShowMore</Button>
       </div>
-    )
+    ) : null;
   }
 
   const Links = () => {
@@ -84,30 +99,40 @@ function RightBar(props) {
 
   return (
     <div className='rightBar-container'>
+
       <Search />
-      <SubContainer tittle={`What's happening`} >
-        {happening_list.map((tweet, i) => (
+
+      <SubContainer tittle={`What's happening`} path={'/home'} >
+        {tweetsList.map((tweet, i) => (
           <button key={"tweet " + i} className='rightBar-content-button'>
-            <p>{tweet.username}</p>
+            <p>{tweet.user_name}</p>
             <p>{tweet.content}</p>
-            <p>{tweet.comments + " coments"}</p>
+            <p>{tweet.info.comment_count + " coments"}</p>
           </button>
         ))}
       </SubContainer>
-      <SubContainer tittle={`Who to follow`} >
-        {users_list.map((user, i) => (
-          <button key={"user " + i} className='rightBar-content-button' style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+      <SubContainer tittle={`Who to follow`} path={'/home'} >
+        {usersList.map((user, i) => (
+          <button
+            key={"user " + i}
+            className='rightBar-content-button'
+            style={{ flexDirection: 'row', alignItems: 'center' }}
+            onClick={() => { navigate('/Profile/' + user.user_name) }}
+          >
             <img
               src={require('../images/default_profile_400x400.png')}
             />
             <div>
-              <p>{user.name}</p>
-              <p>{"@" + user.username}</p>
+              <p>{user.first_name}</p>
+              <p>{"@" + user.user_name}</p>
             </div>
           </button>
         ))}
       </SubContainer>
+
       <Links />
+
     </div>
   );
 }
