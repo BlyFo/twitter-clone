@@ -7,7 +7,9 @@ commented_by = Table("commented_by", meta,
                      Column("tweet_id", Integer,
                             ForeignKey('tweets.tweet_id')),
                      Column("user_name", String(50),
-                            ForeignKey('users.user_name'))
+                            ForeignKey('users.user_name')),
+                     Column("tweet_comment_id", Integer,
+                            ForeignKey('tweets.tweet_id'))
                      )
 
 meta.create_all(engine)

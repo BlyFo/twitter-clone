@@ -112,7 +112,7 @@ export const LikeTweet = async ({ token, tweetId, userName }) => {
             }
         })
         if (resPut.status === 200) {
-            return resPut.data
+            return resPut.data[0]
         } else {
             return -1
         }
@@ -167,6 +167,25 @@ export const getUsers = async ({ userName }) => {
         const resPut = await axios.get(api + header, {
             headers: {
                 'User-Name': userName
+            }
+        })
+        if (resPut.status === 200) {
+            return resPut.data
+        } else {
+            return -1
+        }
+    } catch (error) {
+        console.log(error)
+        return -1
+    }
+}
+export const getTweet = async ({ userName, tweetId }) => {
+
+    const header = "/tweets/" + tweetId;
+    try {
+        const resPut = await axios.get(api + header, {
+            params: {
+                user_name: userName
             }
         })
         if (resPut.status === 200) {

@@ -3,6 +3,7 @@ import './App.css';
 import Content from './content';
 import RootPage from './pages/rootPage';
 import ProfilePage from './pages/profilepage';
+import CommentsPage from './pages/commentsPage';
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { getTweets } from '../services/endPoints';
@@ -37,6 +38,7 @@ function App() {
         <Route path='/' element={<RootPage login={login} setLogin={setLogin} updatePage={GetInfoOnStartUp} />}>
           <Route path='/Home' element={<Content userProfile={login} tweets={tweets} done={done} setTweets={setTweets} updatePage={GetInfoOnStartUp} />} />
           <Route path='/Profile/:postSlug' element={<ProfilePage userProfile={login} />} />
+          <Route path='/Tweet/:postSlug' element={<CommentsPage userProfile={login} />} />
         </Route>
       </Routes>
     </BrowserRouter>

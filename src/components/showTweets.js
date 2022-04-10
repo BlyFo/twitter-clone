@@ -39,22 +39,23 @@ function ShowTweets({ userProfile, tweets, setTweets }) {
   const handleClose = () => {
     setOpen(false);
   }
-
   async function LikeTweetContent(tweetId) {
     const response = await LikeTweet({
       token: userProfile.token,
       tweetId: tweetId,
       userName: userProfile.userName
     })
-    setTweets(
-      tweets.map(item =>
-        item.tweet_id === tweetId
-          ? {
-            ...response
-          }
-          : item
+    if (response !== -1) {
+      setTweets(
+        tweets.map(item =>
+          item.tweet_id === tweetId
+            ? {
+              ...response
+            }
+            : item
+        )
       )
-    )
+    }
   }
   async function DeleteTweetContent(tweetId) {
     const response = await DeleteTweet({
@@ -105,12 +106,13 @@ function ShowTweets({ userProfile, tweets, setTweets }) {
     <>
       {
         tweets.map((tweet) => (
-          <div key={"posted tweet " + tweet.tweet_id} className='content-tweet-container'>
+          <div key={"posted tweet " + tweet.tweet_id} className='content-tweet-container' >
             <img
               src={require('../images/default_profile_400x400.png')}
             />
             <div className='content-tweet-content'>
               {/* post tittle */}
+
               <div className='content-tweet-content-tittle'>
                 <button
                   className='content-tweet-content-userName'
@@ -131,6 +133,7 @@ function ShowTweets({ userProfile, tweets, setTweets }) {
               </div>
               {/* post's content */}
               <p>{tweet.content}</p>
+
               {/* post's likes and coments */}
               <div className='content-tweet-content-buttons'>
                 <button className={tweet.info.liked ? 'button-like-activate' : 'button-like'}
@@ -139,8 +142,8 @@ function ShowTweets({ userProfile, tweets, setTweets }) {
                   <FavoriteButton sx={{ fontSize: '20px', color: tweet.info.liked ? 'red' : 'black' }} />
                   <p>{tweet.info.like_count}</p>
                 </button>
-                <button className='button-reply'>
-                  <ReplyButton sx={{ fontSize: '20px' }} onClick={() => { setOpen(true); setTweetID(tweet.tweet_id); }} />
+                <button className={tweet.info.liked ? 'button-reply-activate' : 'button-reply'}>
+                  <ReplyButton sx={{ fontSize: '20px', color: tweet.info.commented ? 'blue' : 'black' }} onClick={() => { navigate('/Tweet/' + tweet.tweet_id) }} />
                   <p>{tweet.info.comment_count}</p>
                 </button>
               </div>

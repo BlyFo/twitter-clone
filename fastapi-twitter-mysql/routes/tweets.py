@@ -1,4 +1,6 @@
 import json
+
+from traceback import print_tb
 from typing import List, Optional
 from datetime import datetime
 from pydantic import Field
@@ -14,7 +16,8 @@ from models.users import users
 from schemas.tweets import BaseTweet, TweetInfo, FullTweet, SimpleTweet, FullTweetInfo, UserNameTweet
 from authentication.auth import AuthHandler
 
-from sqlalchemy import desc
+from sqlalchemy import desc, join
+from sqlalchemy.sql import select
 
 tweet_router = APIRouter(
     prefix="/tweets",
@@ -182,12 +185,21 @@ def create_Tweet(tweet: BaseTweet, token_username=Depends(auth_handler.auth_wrap
 
     if new_tweet['reply_to'] != None:
 
+        print(new_tweet['reply_to'])
+
         old_tweet = get_tweet(new_tweet['reply_to'], new_tweet['user_name'])
 
         conn.execute(tweets.update().values(
-            comments_count=old_tweet.info['comment_count']+1,
-            comments=old_tweet.info['comment_by'] + [result.tweet_id]
-        ).where(tweets.c.tweet_id == old_tweet.tweet_id))
+            comments_count=old_tweet[0].info['comment_count']+1,
+        ).where(tweets.c.tweet_id == old_tweet[0].tweet_id))
+
+        conn.execute(
+            commented_by.insert().values(
+                tweet_id=new_tweet['reply_to'],
+                user_name=new_tweet['user_name'],
+                tweet_comment_id=result['tweet_id']
+            )
+        )
 
     temp_dict = TweetInfo(
         like_count=new_tweet['likes_count'],
@@ -210,11 +222,12 @@ def create_Tweet(tweet: BaseTweet, token_username=Depends(auth_handler.auth_wrap
 @tweet_router.get(
     path="/{tweet_id}",
     status_code=status.HTTP_200_OK,
-    response_model=FullTweet,
+    # response_model=FullTweet,
     summary="get a tweet",
 )
 def get_tweet(tweet_id: str, user_name: str):
 
+    tweets_list = []
     tweet_result = conn.execute(
         tweets.select().where(tweets.c.tweet_id == tweet_id)
     ).first()
@@ -226,8 +239,20 @@ def get_tweet(tweet_id: str, user_name: str):
         )
 
     tweet_response = create_fullTweet(tweet_result, user_name)
+    tweets_list.append(tweet_response)
 
-    return tweet_response
+    tweet_comment = conn.execute(
+        tweets.select().where(
+            commented_by.c.tweet_id == tweet_id,
+            commented_by.c.tweet_comment_id == tweets.c.tweet_id
+        )
+    ).fetchall()
+
+    for tweet in tweet_comment:
+        tweet_response = create_fullTweet(tweet, user_name)
+        tweets_list.append(tweet_response)
+
+    return tweets_list
 
 
 @tweet_router.put(
@@ -295,7 +320,7 @@ def update_tweet(tweet_id: int, user_name: str, tweet_content: str, token_userna
 @tweet_router.put(
     path="/like/{tweet_id}",
     status_code=status.HTTP_200_OK,
-    response_model=FullTweet,
+    # response_model=FullTweet,
     summary="like a tweet",
 )
 def like_tweet(tweet_id: int, user_name: str, token_username=Depends(auth_handler.auth_wrapper)):
@@ -314,7 +339,7 @@ def like_tweet(tweet_id: int, user_name: str, token_username=Depends(auth_handle
     if like_result == None:
         # the user never liked the tweet
         conn.execute(tweets.update().values(
-            likes_count=old_tweet.info['like_count']+1,
+            likes_count=old_tweet[0].info['like_count']+1,
         ).where(tweets.c.tweet_id == tweet_id))
 
         conn.execute(
@@ -323,16 +348,16 @@ def like_tweet(tweet_id: int, user_name: str, token_username=Depends(auth_handle
         )
     else:
         conn.execute(tweets.update().values(
-            likes_count=old_tweet.info['like_count']-1,
+            likes_count=old_tweet[0].info['like_count']-1,
         ).where(tweets.c.tweet_id == tweet_id))
 
         conn.execute(
             liked_by.delete()
             .where(liked_by.c.tweet_id == tweet_id and liked_by.c.user_name == user_name)
         )
-
+    print('a')
     result = get_tweet(tweet_id, user_name)
-
+    print('b')
     return result
 
 

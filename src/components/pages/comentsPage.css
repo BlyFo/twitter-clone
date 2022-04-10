@@ -1,0 +1,74 @@
+.comment-firstTweet{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: fit-content;
+    border: 1px solid #E1E8ED;
+    border-style: none none solid none;
+    padding-top: 65px;
+    padding-left: 20px;
+}
+.comment-firstTweet-tittle{
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    width: 100%;
+    height: fit-content;
+}
+.comment-firstTweet-tittle >p{
+    margin: 0px;
+    padding: 0px;
+    font-size: 15px;
+}
+.comment-firstTweet-userName{
+    text-align: left;
+    width: fit-content;
+    border: none;
+    background: none;
+    font-weight: bold;
+    font-size: 15px;
+    margin: 0px;
+    padding: 0px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+.comment-firstTweet-content{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-left: 11px;
+}
+.comment-firstTweet-content{
+    margin: 0px;
+    padding: 0px;
+    padding-top: 10px;
+    font-size: 22px;
+}
+.comment-firstTweet-likes{
+    display: flex;
+    flex-direction: row;
+    width: 93%;
+    border: 1px solid #E1E8ED;
+    border-style: solid none solid none;
+    justify-content: space-around;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.comment-firstTweet-likes > p{
+    margin: 0px;
+    padding: 0px;
+}
+.comment-firstTweet-buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 93%;
+}
+.comment-firstTweet-buttons > button{
+    margin: 0px;
+    padding: 0px;
+    background: none;
+    border: none;
+}

@@ -1,14 +1,17 @@
 .content-tweet-container{
     display: flex;
     flex-direction: row;
-    
-    width: 96.7%;
+    margin: 0px;
+    padding: 0px;
+    background: none;
+    width: 100%;
     border: 1px solid #E1E8ED;
     border-style: none none solid none;
     height: fit-content;
     padding-left: 20px;
     padding-top: 20px;
     cursor: pointer;
+    z-index: 0;
 }
 .content-tweet-container:hover{
     background-color: #F5F8FA;
@@ -26,7 +29,8 @@
 }
 .content-tweet-content > p {
     margin: 0px;
-    margin-top: 2px;
+    margin-top: 5px;
+    text-align: left;
 }
 .content-tweet-content-tittle{
     display: flex;
@@ -92,4 +96,7 @@
 .button-reply:hover{
     color: blue;
     cursor: pointer
+}
+.button-reply-activate{
+    color: blue;
 }
